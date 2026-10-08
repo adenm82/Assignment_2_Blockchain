@@ -4,13 +4,13 @@
 #include <windows.h>
 #include "user.h"
 
-struct User* add(struct User * head, char* Username) {
-	Sleep((rand() % 10 + 1) * 1000);
+struct User* add(struct User* head, char* Username) {
+    Sleep((rand() % 10 + 1) * 1000);
 
-	struct User* newHead = (struct User*)malloc(sizeof(struct User));
-	strcpy(newHead->Username, Username);
-	time(&(newHead->loginTime));
-	newHead->localLoginTime = *localtime(&(newHead->loginTime));
+    struct User* newHead = (struct User*)malloc(sizeof(struct User));
+    strcpy(newHead->Username, Username);
+    time(&(newHead->loginTime));
+    newHead->localLoginTime = *localtime(&(newHead->loginTime));
     newHead->next = head;
     if (head == NULL) {
         newHead->hash.hash0 = 0;
@@ -20,32 +20,32 @@ struct User* add(struct User * head, char* Username) {
         newHead->hash.hash4 = 0;
     }
     else {
-       
-        generateDigest(&(newHead->hash), head->next); // Incorrectly linking the newly created node
+
+        generateDigest(&(newHead->hash), head); // Incorrectly linking the newly created node
     }
-    
+
     return newHead;
 }
 
 void printLog(struct User* head) {
-	struct User* iterator = head;
-	printf("********** Access Log **********\n");
-	while (iterator != NULL) {
-		printf("Username: %-20s\t", iterator->Username);
+    struct User* iterator = head;
+    printf("********** Access Log **********\n");
+    while (iterator != NULL) {
+        printf("Username: %-20s\t", iterator->Username);
 
-		printf("Last Login: %02d/%02d/%04d %02d:%02d:%02d\t",
-			iterator->localLoginTime.tm_mon + 1,
-			iterator->localLoginTime.tm_mday,
-			iterator->localLoginTime.tm_year + 1900,
-			iterator->localLoginTime.tm_hour,
-			iterator->localLoginTime.tm_min,
-			iterator->localLoginTime.tm_sec);
+        printf("Last Login: %02d/%02d/%04d %02d:%02d:%02d\t",
+            iterator->localLoginTime.tm_mon + 1,
+            iterator->localLoginTime.tm_mday,
+            iterator->localLoginTime.tm_year + 1900,
+            iterator->localLoginTime.tm_hour,
+            iterator->localLoginTime.tm_min,
+            iterator->localLoginTime.tm_sec);
 
-		printf("\tHash: ");
+        printf("\tHash: ");
         printDigest(iterator->hash);
         iterator = iterator->next;
 
-	}
+    }
 }
 
 void printUser(struct User* user) {
@@ -64,18 +64,18 @@ void printUser(struct User* user) {
 
 void generateDigest(struct Digest* digest, struct User* User) {
     unsigned char* result = SSHA((unsigned char*)User, STRUCT_SIZE);
-    digest->hash0 = result[1]; // Incorrectly calculating the hash
-    digest->hash1 = result[2];
-    digest->hash2 = result[3];
-    digest->hash3 = result[4];
-    digest->hash4 = result[5];
+    digest->hash0 = result[0]; // Incorrectly calculating the hash
+    digest->hash1 = result[1];
+    digest->hash2 = result[2];
+    digest->hash3 = result[3];
+    digest->hash4 = result[4];
 }
 void verify(struct User* curr) {
     int height = 2;
 
     printf("******** Verifying Log *********\n\n");
 
-    struct Block* prev = NULL;
+    struct User* prev = NULL;
     if (curr != NULL) {
         prev = curr->next;
     }
